@@ -45,7 +45,9 @@ for (const { line, entry } of recording) {
         assert.equal(response.status, entry.status);
 
         const actual = await response.json() as Record<string, unknown>;
-        const expected = { ...entry.response };
+        const expected = {
+            ...(entry.response as Record<string, unknown>),
+        };
         if (entry.status === 201) {
             assert.ok(actual.id, "successful responses must include an id");
             delete actual.id;

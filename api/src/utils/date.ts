@@ -13,3 +13,20 @@ export const isValidDateFormat = (date: string): boolean => {
         && parsedDate.getUTCMonth() === month - 1
         && parsedDate.getUTCDate() === day;
 };
+
+export const getDateInTimezone = (timestamp: string, timezone: string): string => {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).formatToParts(new Date(timestamp));
+
+    const values = Object.fromEntries(
+        parts
+            .filter(({type}) => type !== 'literal')
+            .map(({type, value}) => [type, value]),
+    );
+
+    return `${values.year}-${values.month}-${values.day}`;
+};

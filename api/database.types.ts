@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      completions: {
+        Row: {
+          base_xp: number | null
+          created_at: string
+          day: string | null
+          id: string
+          quest_id: string
+        }
+        Insert: {
+          base_xp?: number | null
+          created_at: string
+          day?: string | null
+          id?: string
+          quest_id: string
+        }
+        Update: {
+          base_xp?: number | null
+          created_at?: string
+          day?: string | null
+          id?: string
+          quest_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "completions_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quests: {
         Row: {
           created_at: string
