@@ -8,7 +8,7 @@ type RecordingEntry = {
     path: string;
     body?: Record<string, unknown>;
     status: number;
-    response?: Record<string, unknown>;
+    response?: Record<string, unknown> | Array<Record<string, unknown>>;
 };
 
 const recordingPath = new URL("../../reference_recording.jsonl", import.meta.url);
@@ -153,3 +153,64 @@ test("edge case: rejects both due_date and recurrence", async () => {
         error: "a quest cannot have both due_date and recurrence",
     });
 });
+
+const recordedGets = (await readFile(recordingPath, "utf8"))
+    .split("\n")
+    .flatMap((line, index) => {
+        if (!line.trim()) {
+            return [];
+        }
+
+        const entry = JSON.parse(line) as RecordingEntry;
+        return entry.method === "GET" && entry.path === "/quests"
+            ? [{ line: index + 1, entry }]
+            : [];
+    });
+
+async function getQuests(now: string) {
+    return fetch(`${apiBaseUrl}/api/quests`, {
+        headers: { "x-now": now },
+    });
+}
+
+test("GET /api/quests happy path: returns the required quest shape", async () => {
+    const response = await getQuests("2026-10-26T08:04:00+02:00");
+
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.ok(Array.isArray(body));
+
+    for (const quest of body) {
+        assert.deepEqual(Object.keys(quest).sort(), [
+            "difficulty",
+            "done",
+            "due_date",
+            "id",
+            "recurrence",
+            "title",
+        ]);
+        assert.equal(typeof quest.id, "string");
+        assert.equal(typeof quest.title, "string");
+        assert.equal(typeof quest.difficulty, "string");
+        assert.equal(typeof quest.done, "boolean");
+        assert.ok(quest.due_date === null || typeof quest.due_date === "string");
+        assert.ok(quest.recurrence === null || typeof quest.recurrence === "string");
+    }
+});
+
+test("GET /api/quests failure: unknown quest sub-route returns 404", async () => {
+    const response = await fetch(`${apiBaseUrl}/api/quests/not-a-quest`, {
+        method: "GET",
+    });
+
+    assert.equal(response.status, 404);
+});
+
+for (const { line, entry } of recordedGets) {
+    test(`recorded GET line ${line}: returns 200`, async () => {
+        const response = await getQuests(entry.x_now);
+
+        assert.equal(response.status, entry.status);
+        assert.ok(Array.isArray(await response.json()));
+    });
+}
