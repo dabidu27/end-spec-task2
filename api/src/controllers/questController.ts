@@ -168,7 +168,6 @@ export const completeQuest = async(req: FastifyRequest<{Params: {id: string}}>, 
             returnedCompletion = completionData[0];
             addXp = 0;
         }
-    
     }
     
     //returnedCompletion === null => we have to add completion
