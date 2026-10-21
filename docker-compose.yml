@@ -1,0 +1,16 @@
+services:
+  api:
+    build: ./apps/api
+    env_file: ./apps/api/.env
+    environment:
+      PORT: 3001
+      WEB_ORIGIN: http://localhost:3000
+    ports:
+      - "3001:3001"
+
+  web:
+    build: ./apps/web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
