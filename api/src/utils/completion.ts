@@ -68,7 +68,7 @@ export function computeLevelAndXpUpdate(addXp: number, currXp: number, currXpInL
     return {currXp, currXpInLevel, nextLevelXp, currLevel};
 }   
 
-const isYesterday = (latest: string, today: string) => {
+export const isYesterday = (latest: string, today: string) => {
     //convert to date
     const todayDate = new Date(today);
     todayDate.setUTCDate(todayDate.getUTCDate() - 1); //subtract 1 day to find yesterday of today

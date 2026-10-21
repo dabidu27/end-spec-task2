@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { getUserData } from "../utils/completion.js";
 import { isValidTimezone } from "../utils/date.js";
 import supabase from "../utils/db.js";
+import { computeStreak } from "../utils/completion.js";
 
 export const getMe = async (req: FastifyRequest, res: FastifyReply) => {
     try {
@@ -9,6 +10,8 @@ export const getMe = async (req: FastifyRequest, res: FastifyReply) => {
         if (!userData) {
             return res.code(500).send({error: "Internal server error"});
         }
+        
+        //Recompute streak
 
         return res.code(200).send({
             timezone: userData.timezone,

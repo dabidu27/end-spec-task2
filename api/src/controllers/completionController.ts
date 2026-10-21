@@ -1,6 +1,7 @@
 import { getUserData } from "../utils/completion.js";
 import supabase from "../utils/db.js";
 import type { FastifyRequest, FastifyReply } from "fastify";
+import { isYesterday } from "../utils/completion.js";
 
 export const getAllCompletions = async(req: FastifyRequest, res: FastifyReply)=>{
 
@@ -81,38 +82,64 @@ export const deleteCompletion = async(req: FastifyRequest<{Params: {id: string}}
         //Get user data for xp, level, streak calculations
         const userData = await getUserData();
 
-        let xp = userData.xp;
+        let totalXp = userData.xp;
         let xpIntoLevel = userData.xp_into_level;
         let xpToNextLevel = userData.xp_to_next_level;
         let level = userData.level;
         let streak = userData.streak;
 
         //Update xp
+        //We recompute from beginning to end in both case (other completions today or not other completions today) - because in the other completions today case, we cannot just substract the basexp from the current total xp of the user, as it might have been affected by a streak
+      
+        const remainingCompletions = [...completionsBefore, ...completionsSameDay, ...completionsAfter];
+        //Sort from oldest to newest
+        remainingCompletions.sort(
+            (a, b) =>
+                new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime(),
+        );
         
-        const otherCompletionsToday = completionsSameDay.length !== 0
-        //If there are other completions today, the streak keeps going, the xp is only modified by subtracting the xp of the completion to delete
-        //If not, we have to recompute
-        if(!otherCompletionsToday){
-            const remainingCompletions = [...completionsBefore, ...completionsSameDay, ...completionsBefore];
-            //Sort from oldest to newest
-            remainingCompletions.sort(
-                (a, b) =>
-                    new Date(a.created_at).getTime() -
-                    new Date(b.created_at).getTime(),
-            );
-            
-            xp = 0;
-            xpIntoLevel = 0;
-            xpToNextLevel = 0;
-            level = 0;
-            streak = 0;
+        totalXp = 0;
+        streak = 0;
 
-            for(let i = 0; i < remainingCompletions.length; i++){
-                if(remainingCompletions[i].day === remainingCompletions[i - 1].day){
-                    xp += remainingCompletions[i].base_xp;
+        for(let i = 0; i < remainingCompletions.length; i++){
+
+            //If the same day as the one before, the streak is not modified, we just add the xp
+            const previousCompletion = remainingCompletions[i - 1];
+            if(previousCompletion && remainingCompletions[i].day === previousCompletion.day){
+                totalXp += remainingCompletions[i].base_xp;
+            }else{
+                //If the 1 before is not on the same day, there are 2 possibilities: today's completion increases the streak, or 1 day was missed an the streak resets
+                //here is also where we account for the first completion, that had previousCompletion undefined
+                if(!previousCompletion || !isYesterday(previousCompletion.day, remainingCompletions[i].day)){
+                    streak = 1;
+                }else{
+                    streak++;
                 }
+
+                const streakBonus = Math.min(streak, 7) * 2;
+                totalXp += remainingCompletions[i].base_xp + streakBonus;
             }
         }
+
+        //Transform totalXp into levels
+        level = 1;
+        xpIntoLevel = totalXp;
+        xpToNextLevel = level * 100;
+        while(xpIntoLevel >= xpToNextLevel){
+            xpIntoLevel -= xpToNextLevel;
+            level++;
+            xpToNextLevel = level * 100;
+        }
+        xpToNextLevel -= xpIntoLevel;
+
+        const userId = userData.id;
+        //After recomputing, update the user
+        const {error: updateUserError} = await supabase.from('me').update({xp: totalXp, xp_into_level: xpIntoLevel, xp_to_next_level: xpToNextLevel, level: level, streak: streak}).eq('id', userId);
+        if(updateUserError)
+            throw new Error('Internal Server Error');
+
+        return res.code(204).send();
 
     }catch(err){
         return res.code(500).send({error: 'Internal server error'});
