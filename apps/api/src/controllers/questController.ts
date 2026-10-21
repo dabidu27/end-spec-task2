@@ -91,8 +91,37 @@ export const getAllQuests = async(req: FastifyRequest, res: FastifyReply) => {
                     new Date(a.created_at).getTime(),
             )
             .map(({ created_at: _createdAt, ...quest }) => quest);
+        
+        //Recompute "done" so the frontend can mark it as done or not done - not necessary for one offs, as once done they remain done, they only become undone on undo completion, but undo completion endpoint sets their done column in the db to false; if the quest is daily, recheck if it has a completion today
+        //With this approach, the db done column for daily quests will remain stale, to avoid a write on read by updating it
+        const userData = await getUserData();
+        
+        const nowHeader = req.headers['x-now'];
+        const now = Array.isArray(nowHeader) ? nowHeader[0] : nowHeader;
 
-        return res.code(200).send(quests);
+        const currentTimestamp = now ?? new Date().toISOString();
+        const todayDate = getDateInTimezone(currentTimestamp, userData.timezone);
+
+        const dailyIds  = quests.filter(q => q.recurrence === 'daily').map(q => q.id);
+        
+        let dailySet = new Set<string>();
+
+        if(dailyIds.length > 0){
+            //select only daily quests that have a completion today - means they are done
+            const {data: dailyDone, error: doneError } = await supabase.from('completions').select('quest_id').in('quest_id', dailyIds).eq('day', todayDate)
+            if(doneError)
+                throw new Error('Internal server error');
+
+            //convert to set for quick lookup, to look at each daily quest and check if they are between those that have been complated today, meaning done; if they are not, we return done false
+            dailySet = new Set((dailyDone ?? []).map(c => c.quest_id));
+        }
+
+        const result = quests.map(q => ({
+            id: q.id, title: q.title, difficulty: q.difficulty,
+            due_date: q.due_date, recurrence: q.recurrence,
+            done: q.recurrence !== 'daily' ? q.done : dailySet.has(q.id)
+        }))
+        return res.code(200).send(result);
 
     }catch(err: any){
         console.log(err.message);
