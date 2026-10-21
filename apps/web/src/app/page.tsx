@@ -1,69 +1,155 @@
-import Image from "next/image";
+"use client";
+
 import styles from "./page.module.css";
+import LevelCard from "@/components/LevelCard";
+import { useState, useEffect } from "react";
+import NewQuestCard from "@/components/NewQuestCard";
+import AllQuests from "@/components/AllQuests";
+import type { Quest } from "@/components/AllQuests";
+
+export interface UserData{
+  xp: number;
+  xpIntoLevel: number,
+  xpToNextLevel: number,
+  streak: number,
+  level: number,
+  timezone: string
+}
 
 export default function Home() {
+
+  const [userData, setUserData] = useState<UserData>();
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [error, setError] = useState<string>('');
+  const [submitQuest, setSubmitQuest] = useState(false);
+  const [loadingQuests, setLoadingQuests] = useState(false);
+  const [completingQuestId, setCompletingQuestId] = useState<string | null>(null);
+
+  const handleCreateQuest = async (title: string, difficulty: string, recurrence: string, dueDate: string) => {
+
+    setError('');
+    setSubmitQuest(true);
+    try {
+      const body: {title: string; difficulty: string; due_date?: string; recurrence?: "daily"} = { title, difficulty };
+
+      if (recurrence === "daily") {
+        body.recurrence = "daily";
+      } else if (dueDate) {
+        body.due_date = dueDate;
+      }
+
+      const res = await fetch("/api/quests", {method: "POST", body: JSON.stringify(body),
+        headers: {
+          "Content-Type": "application/json",
+          "X-Now": new Date().toISOString(),
+        },
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setError(data.error ?? "Internal server error");
+        return;
+      }
+      
+    } catch {
+      setError("Unable to create quest");
+    } finally {
+      setSubmitQuest(false);
+    }
+  };
+
+  const loadUserData = async () => {
+    try {
+      const res = await fetch("/api/me", { method: "GET" });
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setError(data.error ?? "Internal server error");
+        return;
+      }
+
+      setUserData({
+        xp: data.xp,
+        xpIntoLevel: data.xp_into_level,
+        xpToNextLevel: data.xp_to_next_level,
+        streak: data.streak,
+        level: data.level,
+        timezone: data.timezone,
+      });
+    } catch {
+      setError("Unable to load user data");
+    }
+  };
+
+  const loadQuests = async () => {
+    setError('');
+    setLoadingQuests(true);
+    try {
+      const res = await fetch("/api/quests");
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setError(data.error ?? "Unable to load quests");
+        return;
+      }
+
+      setQuests(data);
+    } catch {
+      setError("Unable to load quests");
+    } finally{
+      setLoadingQuests(false);
+    }
+  };
+
+  const handleCompleteQuest = async(id: string) => {
+    setError('')
+    setCompletingQuestId(id);
+    try{
+
+      const res = await fetch(`/api/quests/${encodeURIComponent(id)}/complete`, {
+        method: "POST",
+        headers: {
+          "X-Now": new Date().toISOString(),
+        },
+      });
+      const data = await res.json();
+
+      if(!res.ok || data.error){
+        setError(data.error ?? 'Unable to complete quest');
+        return;
+      }
+
+      await Promise.all([loadUserData(), loadQuests()]);
+    }catch(err){
+      setError('Unable to complete quest');
+    }finally{
+      setCompletingQuestId(null);
+    }
+  }
+
+  useEffect(() => {
+    void loadUserData();
+    void loadQuests();
+  }, []);
+
+  useEffect(() => {
+    void loadUserData();
+  }, [quests])
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className={styles.page}>
+      {error ? <p>{error}</p> : null}
+      {userData ? <LevelCard userData={userData} /> : null}
+
+      <NewQuestCard
+        handleCreateQuest={handleCreateQuest}
+        submitQuest={submitQuest}
+      />
+      <AllQuests
+        quests={quests}
+        completeQuest={handleCompleteQuest}
+        completingQuestId={completingQuestId}
+      />
+    </main>
   );
 }

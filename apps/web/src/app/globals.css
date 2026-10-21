@@ -1,13 +1,6 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #f5f6f8;
+  --foreground: #111a2e;
 }
 
 html {
@@ -26,7 +19,7 @@ body {
   flex-direction: column;
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -45,5 +38,368 @@ a {
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+.levelCard{
+  width: 100%;
+  max-width: 1256px;
+  min-height: 194px;
+
+  display: grid;
+  grid-template-columns: 86px 120px 150px minmax(0, 1fr);
+  align-items: start;
+
+  gap: 24px;
+  padding: 28px 32px;
+
+  border: 1px solid #dce1e9;
+  border-radius: 16px;
+  background: #fff;
+  color: #111a2e;
+
+  font-family: var(--font-geist-sans), sans-serif;
+  box-shadow: 0 1px 2px rgb(17 26 46 / 3%);
+}
+
+.levelMetric {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.metricLabel {
+  color: #5d687d;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.levelMetric > strong {
+  color: #111a2e;
+  font-size: 46px;
+  font-weight: 750;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.streakMetric small {
+  color: #5d687d;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.levelProgressArea {
+  min-width: 0;
+  grid-column: 1 / -1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-bottom: 2px;
+}
+
+.levelProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #5d687d;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.levelProgressHeader strong {
+  color: #111a2e;
+  font-weight: 700;
+}
+
+.progressBar {
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    #3455d9 0 var(--progress),
+    #e6e9ef var(--progress) 100%
+  );
+}
+
+.newQuestCard{
+  width: 100%;
+  max-width: 1256px;
+  min-height: 194px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 24px;
+  padding: 28px 32px;
+
+  border: 1px solid #dce1e9;
+  border-radius: 16px;
+  background: #fff;
+  color: #111a2e;
+
+  font-family: var(--font-geist-sans), sans-serif;
+  box-shadow: 0 1px 2px rgb(17 26 46 / 3%);
+}
+
+.newQuestText{
+  color: #111a2e;
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: -0.05em;
+  line-height: 1
+}
+
+.selectionArea{
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) minmax(150px, 0.9fr) minmax(150px, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+}
+
+.selectionArea:has(.dateInput) {
+  grid-template-columns:
+    minmax(190px, 1.5fr)
+    minmax(135px, 0.9fr)
+    minmax(135px, 1fr)
+    minmax(145px, 1fr)
+    auto;
+}
+
+.titleArea,
+.selectionField {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.selectionArea select {
+  height: 30px;
+  min-width: 0;
+  border: 1px solid #cfd6e2;
+  border-radius: 7px;
+  padding: 0 10px;
+  color: #111a2e;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dateInput {
+  height: 30px;
+  min-width: 0;
+  border: 1px solid #cfd6e2;
+  border-radius: 7px;
+  padding: 0 10px;
+  color: #111a2e;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dateInput:focus,
+.selectionArea select:focus {
+  border-color: #3455d9;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(52 85 217 / 12%);
+}
+
+.addQuestButton {
+  height: 30px;
+  border: 0;
+  border-radius: 7px;
+  padding: 0 18px;
+  color: #fff;
+  background: #3455d9;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.addQuestButton:disabled {
+  background: #9aa5bb;
+  cursor: wait;
+  opacity: 0.8;
+}
+
+.allQuestsCard {
+  width: 100%;
+  max-width: 1256px;
+  overflow: hidden;
+  border: 1px solid #dce1e9;
+  border-radius: 16px;
+  background: #fff;
+  color: #111a2e;
+  font-family: var(--font-geist-sans), sans-serif;
+  box-shadow: 0 1px 2px rgb(17 26 46 / 3%);
+}
+
+.allQuestsTitle {
+  padding: 24px 32px 18px;
+  color: #111a2e;
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.questRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid #e5e8ee;
+  padding: 16px 32px;
+}
+
+.questDetails {
+  min-width: 0;
+}
+
+.questDetails h3 {
+  overflow: hidden;
+  color: #111a2e;
+  font-size: 17px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.questDetails p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 7px;
+  color: #5d687d;
+  font-size: 14px;
+}
+
+.difficultyBadge {
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-weight: 600;
+}
+
+.difficultyBadge.easy {
+  color: #3654c8;
+  background: #e9edff;
+}
+
+.difficultyBadge.medium {
+  color: #ae5c14;
+  background: #fff1df;
+}
+
+.difficultyBadge.hard {
+  color: #9b3840;
+  background: #ffebed;
+}
+
+.questSchedule {
+  color: #5d687d;
+}
+
+.completeQuestButton {
+  flex: 0 0 auto;
+  min-width: 115px;
+  border: 0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  color: #fff;
+  background: #3455d9;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.completeQuestButton:disabled {
+  color: #5d687d;
+  background: #e6e9ef;
+  cursor: default;
+}
+
+.questDone .questDetails h3 {
+  color: #7d8798;
+  text-decoration: line-through;
+}
+
+.emptyQuests {
+  border-top: 1px solid #e5e8ee;
+  padding: 20px 32px;
+  color: #5d687d;
+  font-size: 15px;
+}
+
+.titleInput{
+  height: 30px;
+  width: 100%;
+  background: transparent;
+  border: 1px solid #cfd6e2;
+  border-radius: 7px;
+  padding: 0 12px;
+  outline: none;
+  font: inherit;
+  color: #111a2e;
+}
+
+.titleInput::placeholder {
+  color: #8b95a8;
+  opacity: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.titleInput:focus {
+  border-color: #3455d9;
+  box-shadow: 0 0 0 3px rgb(52 85 217 / 12%);
+}
+
+@media (max-width: 768px) {
+  .selectionArea {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .selectionArea:has(.dateInput) {
+    grid-template-columns: 1fr;
+  }
+
+  .addQuestButton {
+    justify-self: start;
+  }
+
+  .levelCard {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 24px;
+  }
+
+  .levelProgressArea {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .levelProgressHeader {
+    white-space: normal;
+  }
+
+  .questRow {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .completeQuestButton {
+    align-self: flex-start;
   }
 }
