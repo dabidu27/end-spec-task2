@@ -123,13 +123,13 @@ a {
   gap: 24px;
   padding: 28px 32px;
 
-  border: 1px solid #dce1e9;
+  border: 1px solid transparent;
   border-radius: 16px;
-  background: #fff;
-  color: #111a2e;
+  background: linear-gradient(120deg, #4f46d6, #7a70f0);
+  color: #fff;
 
   font-family: var(--font-geist-sans), sans-serif;
-  box-shadow: 0 1px 2px rgb(17 26 46 / 3%);
+  box-shadow: 0 1px 2px rgb(79 70 214 / 25%);
 }
 
 .levelMetric {
@@ -139,14 +139,14 @@ a {
 }
 
 .metricLabel {
-  color: #5d687d;
+  color: rgb(255 255 255 / 95%);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
 .levelMetric > strong {
-  color: #111a2e;
+  color: #fff;
   font-size: 46px;
   font-weight: 750;
   letter-spacing: -0.05em;
@@ -154,7 +154,7 @@ a {
 }
 
 .streakMetric small {
-  color: #5d687d;
+  color: rgb(255 255 255 / 95%);
   font-size: 18px;
   font-weight: 500;
   letter-spacing: 0;
@@ -174,14 +174,14 @@ a {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  color: #5d687d;
+  color: rgb(255 255 255 / 95%);
   font-size: 16px;
   font-weight: 500;
   white-space: nowrap;
 }
 
 .levelProgressHeader strong {
-  color: #111a2e;
+  color: #fff;
   font-weight: 700;
 }
 
@@ -192,8 +192,9 @@ a {
   border-radius: 999px;
   background: linear-gradient(
     90deg,
-    #3455d9 0 var(--progress),
-    #e6e9ef var(--progress) 100%
+    #ffe29a 0,
+    #fff var(--progress),
+    rgb(255 255 255 / 28%) var(--progress) 100%
   );
 }
 
