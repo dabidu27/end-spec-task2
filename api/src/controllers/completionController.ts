@@ -10,7 +10,11 @@ export const getAllCompletions = async(req: FastifyRequest, res: FastifyReply)=>
         if(error)
             throw new Error('Internal server error');
         //allCompletions is [] is no data
-        return res.code(200).send(allCompletions)
+        const formattedCompletions = allCompletions.map((completion) => ({
+            ...completion,
+            created_at: new Date(completion.created_at).toISOString().replace(".000Z", "Z"), //normalize the supabse timestampz - 2026-10-16T07:01:00+00:00 to 2026-10-16T07:01:00Z
+        }));
+        return res.code(200).send(formattedCompletions)
     }catch(err){
         return res.code(500).send({error: 'Internal server error'});
     }

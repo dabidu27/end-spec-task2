@@ -1,8 +1,11 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { getUserData } from "../utils/completion.js";
+import { getUserData, isYesterday } from "../utils/completion.js";
 import { isValidTimezone } from "../utils/date.js";
 import supabase from "../utils/db.js";
-import { computeStreak } from "../utils/completion.js";
+import { getDateInTimezone } from "../utils/date.js";
+
+const DEFAULT_TIMEZONE = 'Europe/Bucharest';
+
 
 export const getMe = async (req: FastifyRequest, res: FastifyReply) => {
     try {
@@ -10,8 +13,34 @@ export const getMe = async (req: FastifyRequest, res: FastifyReply) => {
         if (!userData) {
             return res.code(500).send({error: "Internal server error"});
         }
-        
-        //Recompute streak
+
+        const nowHeader = req.headers["x-now"];
+        const now = Array.isArray(nowHeader) ? nowHeader[0] : nowHeader;
+
+        const currentTimestamp = now ?? new Date().toISOString();
+        const timezone = userData.timezone ?? DEFAULT_TIMEZONE
+        let todayDate: string;
+        try {
+            todayDate = getDateInTimezone(currentTimestamp, timezone);
+        } catch (error: any) {
+            return res.code(500).send({error: 'Internal server error'});
+        }
+
+        //Recompute streak - if a user enters on the 17th without doing a comlpetion, and their last completion was 2 days ago (not day and not yesterday), the streak is lost - reset to 0
+        //the next completion done will set the streak to 1
+
+        let streak = userData.streak;
+        const {data: allCompletions, error} = await supabase.from('completions').select('*').order('created_at', {ascending: false});
+        if(error)
+            throw new Error('Internal server error');
+
+        const lastCompletion = allCompletions[0];
+        if(!lastCompletion || (lastCompletion.day !== todayDate && !isYesterday(lastCompletion.day, todayDate))){ //Streak is also 0 if there no completions
+            const {error: userUpdateError} = await supabase.from('me').update({streak: 0}).eq('id', userData.id);
+            if(userUpdateError)
+                throw new Error('Internal server error');
+            streak = 0;
+        }
 
         return res.code(200).send({
             timezone: userData.timezone,
@@ -19,7 +48,7 @@ export const getMe = async (req: FastifyRequest, res: FastifyReply) => {
             level: userData.level,
             xp_into_level: userData.xp_into_level,
             xp_to_next_level: userData.xp_to_next_level,
-            streak: userData.streak,
+            streak: streak,
         });
         
     } catch {

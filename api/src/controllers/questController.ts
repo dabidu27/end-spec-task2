@@ -121,9 +121,7 @@ export const completeQuest = async(req: FastifyRequest<{Params: {id: string}}>, 
     //Compute day in local timezone
     //normalize header as it can be an array and we cannot split on it
     const nowHeader = req.headers["x-now"];
-    const now = Array.isArray(nowHeader)
-        ? nowHeader[0]
-        : nowHeader;
+    const now = Array.isArray(nowHeader) ? nowHeader[0] : nowHeader;
 
     const currentTimestamp = now ?? new Date().toISOString();
 
