@@ -46,6 +46,36 @@ export type Database = {
           },
         ]
       }
+      me: {
+        Row: {
+          id: string
+          level: number
+          streak: number
+          timezone: string
+          xp: number
+          xp_into_level: number
+          xp_to_next_level: number
+        }
+        Insert: {
+          id?: string
+          level?: number
+          streak?: number
+          timezone?: string
+          xp?: number
+          xp_into_level?: number
+          xp_to_next_level?: number
+        }
+        Update: {
+          id?: string
+          level?: number
+          streak?: number
+          timezone?: string
+          xp?: number
+          xp_into_level?: number
+          xp_to_next_level?: number
+        }
+        Relationships: []
+      }
       quests: {
         Row: {
           created_at: string

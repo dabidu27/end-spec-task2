@@ -30,3 +30,15 @@ export const getDateInTimezone = (timestamp: string, timezone: string): string =
 
     return `${values.year}-${values.month}-${values.day}`;
 };
+
+export const isValidTimezone = (timezone: string): boolean =>{
+
+    try{
+        //If this does not throw, it means the parsing of the timezone succeded, even though we pass no date
+        new Intl.DateTimeFormat(undefined, {timeZone: timezone});
+        return true;
+    }catch(err){
+        return false;
+    }
+
+}
