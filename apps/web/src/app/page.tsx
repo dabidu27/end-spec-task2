@@ -34,6 +34,7 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const timezonePopoverRef = useRef<HTMLDivElement>(null);
   const [newLevel, setNewLevel] = useState(false);
+  const prevLevel = useRef<number | null>(null);
 
   const timezones = useMemo(() => Intl.supportedValuesOf("timeZone"), []);
   const filteredTimezones = useMemo(() => {
@@ -88,8 +89,9 @@ export default function Home() {
         return;
       }
 
-      if(data.level > userData?.level!)
-        setNewLevel(true);
+      if(prevLevel.current !== null && data.level > prevLevel.current)
+        setNewLevel(true)
+      prevLevel.current = data.level;
 
       setUserData({
         xp: data.xp,
@@ -250,10 +252,6 @@ export default function Home() {
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, []);
-
-  useEffect(() => {
-    void loadUserData();
-  }, [quests])
 
   return (
     <main className={styles.page}>
