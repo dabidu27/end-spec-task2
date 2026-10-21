@@ -1,2 +1,20 @@
-*.md
-*.jsonl
+brief_task_2.md
+reference_recording.jsonl
+# Dependencies
+node_modules/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Supabase local state
+.supabase/
+supabase/.temp/
+
+# Local recording fixtures
+.recording-fixtures/
