@@ -25,16 +25,18 @@ export const getMe = async (req: FastifyRequest, res: FastifyReply) => {
         } catch (error: any) {
             return res.code(500).send({error: 'Internal server error'});
         }
-
+    
         //Recompute streak - if a user enters on the 17th without doing a comlpetion, and their last completion was 2 days ago (not day and not yesterday), the streak is lost - reset to 0
         //the next completion done will set the streak to 1
 
         let streak = userData.streak;
-        const {data: allCompletions, error} = await supabase.from('completions').select('*').order('created_at', {ascending: false});
+        const {data: lastCompletion, error} = await supabase.from('completions').select('*').order('created_at', {ascending: false}).limit(1).maybeSingle();
         if(error)
             throw new Error('Internal server error');
+        
+        console.log({ currentTimestamp, todayDate, lastDay: lastCompletion?.day, nowHeader });
 
-        const lastCompletion = allCompletions[0];
+
         if(!lastCompletion || (lastCompletion.day !== todayDate && !isYesterday(lastCompletion.day, todayDate))){ //Streak is also 0 if there no completions
             const {error: userUpdateError} = await supabase.from('me').update({streak: 0}).eq('id', userData.id);
             if(userUpdateError)
