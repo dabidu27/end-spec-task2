@@ -7,6 +7,15 @@ export interface Quest {
   done: boolean;
 }
 
+function formatDueDate(date: string) {
+  const [, , day] = date.split("-");
+  const monthName = new Date(`${date}T00:00:00`).toLocaleString("en", {
+    month: "short",
+  });
+
+  return `${day} ${monthName}`;
+}
+
 export default function AllQuests({
   quests,
   completeQuest,
@@ -25,42 +34,45 @@ export default function AllQuests({
       ) : (
         quests.map((quest) => (
           <article
-            className={`questRow ${quest.done ? "questDone" : ""}`}
+            className={`questRow quest-${quest.difficulty} ${quest.done ? "questDone" : ""}`}
             key={quest.id}
           >
+            <span className="questMarker" aria-hidden="true" />
             <div className="questDetails">
               <h3>{quest.title}</h3>
               <p>
-                <span className={`difficultyBadge ${quest.difficulty}`}>
-                  {quest.difficulty} ·{" "}
-                  {quest.difficulty === "easy"
-                    ? 10
-                    : quest.difficulty === "medium"
-                      ? 25
-                      : 50}{" "}
-                  XP
-                </span>
-                <span className="questSchedule">
-                  {quest.recurrence === "daily"
-                    ? "Repeats daily"
-                    : quest.due_date
-                      ? `Due ${quest.due_date}`
-                      : "No due date"}
-                </span>
+                {quest.difficulty[0].toUpperCase() + quest.difficulty.slice(1)} ·{" "}
+                {quest.difficulty === "easy"
+                  ? 10
+                  : quest.difficulty === "medium"
+                    ? 25
+                    : 50}{" "}
+                XP ·{" "}
+                {quest.recurrence === "daily"
+                  ? "daily"
+                  : quest.due_date
+                    ? `due ${formatDueDate(quest.due_date)}`
+                    : "no due date"}
               </p>
+              {quest.due_date && new Date(`${quest.due_date}T23:59:59`) < new Date() && !quest.done ? (
+                <span className="overdueBadge">Overdue</span>
+              ) : null}
             </div>
-            <button
-              className="completeQuestButton"
-              type="button"
-              disabled={quest.done || completingQuestId === quest.id}
-              onClick={() => completeQuest(quest.id)}
-            >
-              {quest.done
-                ? "Done"
-                : completingQuestId === quest.id
-                  ? "Completing..."
-                  : "Complete"}
-            </button>
+            {quest.done ? (
+              <span className="doneState">
+                <span className="doneIcon" aria-hidden="true">✓</span>
+                Done
+              </span>
+            ) : (
+              <button
+                className="completeQuestButton"
+                type="button"
+                disabled={completingQuestId === quest.id}
+                onClick={() => completeQuest(quest.id)}
+              >
+                {completingQuestId === quest.id ? "Completing..." : "Complete"}
+              </button>
+            )}
           </article>
         ))
       )}

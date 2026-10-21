@@ -74,13 +74,25 @@ export const createQuest = async(req: FastifyRequest<{Body: CreateQuestBody}>, r
 export const getAllQuests = async(req: FastifyRequest, res: FastifyReply) => {
 
     try{
-        const {data, error} = await supabase.from('quests').select('id, title, difficulty, due_date, recurrence, done').order('created_at', {ascending: false})
+        const {data, error} = await supabase
+            .from('quests')
+            .select('id, title, difficulty, due_date, recurrence, done, created_at')
+            .order('created_at', {ascending: false});
         if(error){
             console.log(error?.message);
             return res.code(500).send({error: 'Internal server error'});
         }
         
-        return res.code(200).send(data ?? []); //make sure we return empty array is data return null
+        //sort to make sure they are ordrered
+        const quests = (data ?? [])
+            .sort(
+                (a, b) =>
+                    new Date(b.created_at).getTime() -
+                    new Date(a.created_at).getTime(),
+            )
+            .map(({ created_at: _createdAt, ...quest }) => quest);
+
+        return res.code(200).send(quests);
 
     }catch(err: any){
         console.log(err.message);

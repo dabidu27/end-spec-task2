@@ -50,6 +50,8 @@ export default function Home() {
         setError(data.error ?? "Internal server error");
         return;
       }
+
+      await loadQuests();
       
     } catch {
       setError("Unable to create quest");

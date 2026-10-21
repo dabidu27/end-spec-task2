@@ -234,17 +234,12 @@ a {
 .allQuestsCard {
   width: 100%;
   max-width: 1256px;
-  overflow: hidden;
-  border: 1px solid #dce1e9;
-  border-radius: 16px;
-  background: #fff;
   color: #111a2e;
   font-family: var(--font-geist-sans), sans-serif;
-  box-shadow: 0 1px 2px rgb(17 26 46 / 3%);
 }
 
 .allQuestsTitle {
-  padding: 24px 32px 18px;
+  padding: 0 8px 22px;
   color: #111a2e;
   font-size: 24px;
   font-weight: 750;
@@ -255,14 +250,72 @@ a {
 .questRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  border-top: 1px solid #e5e8ee;
-  padding: 16px 32px;
+  gap: 18px;
+  min-height: 88px;
+  margin-bottom: 12px;
+  border-radius: 20px;
+  padding: 16px 24px;
+}
+
+.questRow:last-child {
+  margin-bottom: 0;
+}
+
+.quest-medium {
+  background: #ffe5c8;
+}
+
+.quest-hard {
+  background: #ffd7df;
+}
+
+.quest-easy {
+  background: #d7f5e5;
+}
+
+.questMarker {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 14px;
+}
+
+.quest-medium .questMarker {
+  background: #f69a45;
+}
+
+.quest-hard .questMarker {
+  background: #ed617c;
+}
+
+.quest-easy .questMarker {
+  background: #3cbd82;
+}
+
+.questRow.questDone.quest-medium {
+  background: #ffe5c8;
+}
+
+.questRow.questDone.quest-hard {
+  background: #ffd7df;
+}
+
+.questRow.questDone.quest-easy {
+  background: #e5e4fb;
+}
+
+.questDone .questMarker {
+  background: #8881eb;
+}
+
+.questDone .questDetails h3 {
+  color: #7d8798;
+  text-decoration: line-through;
 }
 
 .questDetails {
   min-width: 0;
+  flex: 1;
 }
 
 .questDetails h3 {
@@ -275,48 +328,32 @@ a {
 }
 
 .questDetails p {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 7px;
-  color: #5d687d;
+  margin-top: 8px;
+  color: #30376e;
   font-size: 14px;
+  line-height: 1.2;
 }
 
-.difficultyBadge {
-  border-radius: 5px;
-  padding: 3px 8px;
-  font-weight: 600;
-}
-
-.difficultyBadge.easy {
-  color: #3654c8;
-  background: #e9edff;
-}
-
-.difficultyBadge.medium {
-  color: #ae5c14;
-  background: #fff1df;
-}
-
-.difficultyBadge.hard {
-  color: #9b3840;
-  background: #ffebed;
-}
-
-.questSchedule {
-  color: #5d687d;
+.overdueBadge {
+  display: inline-block;
+  margin-top: 7px;
+  border-radius: 999px;
+  padding: 3px 10px;
+  color: #bc231b;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .completeQuestButton {
   flex: 0 0 auto;
   min-width: 115px;
+  min-height: 48px;
   border: 0;
   border-radius: 10px;
-  padding: 14px 18px;
+  padding: 12px 18px;
   color: #fff;
-  background: #3455d9;
+  background: #30287e;
   font: inherit;
   font-size: 16px;
   font-weight: 700;
@@ -324,19 +361,33 @@ a {
 }
 
 .completeQuestButton:disabled {
-  color: #5d687d;
-  background: #e6e9ef;
+  opacity: 0.65;
   cursor: default;
 }
 
-.questDone .questDetails h3 {
-  color: #7d8798;
-  text-decoration: line-through;
+.doneState {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 6px;
+  color: #168653;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.doneIcon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #1da66a;
+  font-size: 20px;
 }
 
 .emptyQuests {
-  border-top: 1px solid #e5e8ee;
-  padding: 20px 32px;
+  padding: 20px 8px;
   color: #5d687d;
   font-size: 15px;
 }
@@ -397,9 +448,32 @@ a {
     align-items: stretch;
     flex-direction: column;
     gap: 14px;
+    padding: 16px;
+  }
+
+  .questMarker {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+    border-radius: 13px;
+  }
+
+  .questDetails h3 {
+    font-size: 17px;
+  }
+
+  .questDetails p {
+    font-size: 14px;
   }
 
   .completeQuestButton {
+    width: 100%;
+    min-height: 46px;
+    font-size: 16px;
+  }
+
+  .doneState {
     align-self: flex-start;
+    font-size: 16px;
   }
 }
