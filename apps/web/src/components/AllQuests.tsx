@@ -1,3 +1,6 @@
+import { useEffect, useMemo, useState } from "react";
+
+
 export interface Quest {
   id: string;
   title: string;
@@ -25,6 +28,18 @@ export default function AllQuests({
   completeQuest: (id: string) => void;
   completingQuestId: string | null;
 }) {
+  const [page, setPage] = useState(1);
+  const pageSize = 4;
+  const pageCount = Math.max(1, Math.ceil(quests.length / pageSize));
+  const visibleQuests = useMemo(
+    () => quests.slice((page - 1) * pageSize, page * pageSize),
+    [page, quests],
+  );
+
+  useEffect(() => {
+    setPage((currentPage) => Math.min(currentPage, pageCount));
+  }, [pageCount]);
+
   return (
     <section className="allQuestsCard">
       <h2 className="allQuestsTitle">All quests</h2>
@@ -32,7 +47,7 @@ export default function AllQuests({
       {quests.length === 0 ? (
         <p className="emptyQuests">No quests yet. Add your first quest above.</p>
       ) : (
-        quests.map((quest) => (
+        visibleQuests.map((quest) => (
           <article
             className={`questRow quest-${quest.difficulty} ${quest.done ? "questDone" : ""}`}
             key={quest.id}
@@ -76,6 +91,34 @@ export default function AllQuests({
           </article>
         ))
       )}
+      {quests.length > 0 ? (
+        <div className="questPagination">
+          <span>
+            {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, quests.length)} of{" "}
+            {quests.length}
+          </span>
+          <div className="paginationButtons">
+            <button
+              className="paginationButton"
+              type="button"
+              aria-label="Previous quests page"
+              disabled={page === 1}
+              onClick={() => setPage((currentPage) => currentPage - 1)}
+            >
+              ‹
+            </button>
+            <button
+              className="paginationButton"
+              type="button"
+              aria-label="Next quests page"
+              disabled={page === pageCount}
+              onClick={() => setPage((currentPage) => currentPage + 1)}
+            >
+              ›
+            </button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

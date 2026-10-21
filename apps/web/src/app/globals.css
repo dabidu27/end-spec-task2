@@ -35,6 +35,76 @@ a {
   text-decoration: none;
 }
 
+.levelUpPopup {
+  display: flex;
+  width: 100%;
+  min-height: 90px;
+  align-items: center;
+  gap: 16px;
+  border: 2px solid #ffc94f;
+  border-radius: 18px;
+  padding: 18px 24px;
+  color: #29276f;
+  background: #fff;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+.levelUpBadge {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  border-radius: 14px;
+  color: #593d00;
+  background: #ffd46d;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.levelUpMessage {
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.levelUpDismiss {
+  margin-left: auto;
+  border: 0;
+  padding: 8px 16px;
+  color: #4d45c7;
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .levelUpPopup {
+    min-height: 76px;
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .levelUpBadge {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 12px;
+    font-size: 18px;
+  }
+
+  .levelUpMessage {
+    font-size: 16px;
+  }
+
+  .levelUpDismiss {
+    padding: 6px 0 6px 8px;
+    font-size: 14px;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
@@ -262,15 +332,21 @@ a {
 }
 
 .quest-medium {
-  background: #ffe5c8;
+  --quest-background: #ffe5c8;
+  --quest-marker: #f69a45;
+  background: var(--quest-background);
 }
 
 .quest-hard {
-  background: #ffd7df;
+  --quest-background: #ffd7df;
+  --quest-marker: #ed617c;
+  background: var(--quest-background);
 }
 
 .quest-easy {
-  background: #d7f5e5;
+  --quest-background: #d7f5e5;
+  --quest-marker: #3cbd82;
+  background: var(--quest-background);
 }
 
 .questMarker {
@@ -281,31 +357,29 @@ a {
 }
 
 .quest-medium .questMarker {
-  background: #f69a45;
+  background: var(--quest-marker);
 }
 
 .quest-hard .questMarker {
-  background: #ed617c;
+  background: var(--quest-marker);
 }
 
 .quest-easy .questMarker {
-  background: #3cbd82;
+  background: var(--quest-marker);
 }
 
 .questRow.questDone.quest-medium {
-  background: #ffe5c8;
+  background: var(--quest-background);
 }
 
 .questRow.questDone.quest-hard {
-  background: #ffd7df;
+  background: var(--quest-background);
 }
 
 .questRow.questDone.quest-easy {
-  background: #e5e4fb;
-}
-
-.questDone .questMarker {
-  background: #8881eb;
+  --quest-background: #e5e4fb;
+  --quest-marker: #8881eb;
+  background: var(--quest-background);
 }
 
 .questDone .questDetails h3 {
@@ -392,6 +466,144 @@ a {
   font-size: 15px;
 }
 
+.recentCompletionsCard {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #dedff1;
+  border-radius: 20px;
+  padding: 20px 22px 0;
+  background: #fff;
+  color: #1e2052;
+  font-family: var(--font-geist-sans), sans-serif;
+  box-shadow: 0 1px 2px rgb(17 26 46 / 3%);
+}
+
+.recentCompletionsTitle {
+  border-bottom: 1px solid #e4e3f0;
+  padding-bottom: 14px;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+}
+
+.completionRow {
+  display: flex;
+  min-height: 76px;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #e4e3f0;
+}
+
+.completionRow:last-child {
+  border-bottom: 0;
+}
+
+.completionMarker {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  border-radius: 50%;
+  background: #3cbd82;
+}
+
+.completion-hard .completionMarker {
+  background: #f69a45;
+}
+
+.completionDetails {
+  min-width: 0;
+  flex: 1;
+}
+
+.completionDetails h3 {
+  overflow: hidden;
+  color: #1e2052;
+  font-size: 16px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.completionDetails p {
+  margin-top: 4px;
+  color: #60618a;
+  font-size: 14px;
+}
+
+.completionRow > strong {
+  color: #5049cf;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.undoCompletionButton {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  border: 1px solid #d9d8f2;
+  border-radius: 14px;
+  color: #3f416e;
+  background: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.undoCompletionButton:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.emptyCompletions {
+  padding: 24px 0;
+  color: #60618a;
+}
+
+.completionPagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #e4e3f0;
+  padding: 14px 0 16px;
+  color: #60618a;
+  font-size: 14px;
+}
+
+.questPagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  border-top: 1px solid #e4e3f0;
+  padding: 14px 8px 16px;
+  color: #60618a;
+  font-size: 14px;
+}
+
+.paginationButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.paginationButton {
+  width: 52px;
+  height: 52px;
+  border: 1px solid #d9d8f2;
+  border-radius: 12px;
+  color: #3f416e;
+  background: #fff;
+  font: inherit;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.paginationButton:disabled {
+  color: #b8bbca;
+  background: #fafaff;
+  cursor: default;
+  opacity: 0.7;
+}
+
 .titleInput{
   height: 30px;
   width: 100%;
@@ -442,6 +654,28 @@ a {
 
   .levelProgressHeader {
     white-space: normal;
+  }
+
+  .recentCompletionsCard {
+    padding: 22px 20px 0;
+    border-radius: 20px;
+  }
+
+  .completionRow {
+    min-height: 92px;
+    gap: 12px;
+  }
+
+  .completionRow > strong {
+    font-size: 16px;
+  }
+
+  .undoCompletionButton {
+    width: 52px;
+    height: 52px;
+    flex-basis: 52px;
+    border-radius: 14px;
+    font-size: 24px;
   }
 
   .questRow {
