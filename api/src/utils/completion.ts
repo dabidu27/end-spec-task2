@@ -113,6 +113,29 @@ export async function computeStreak(userStreak: number, todayDate: string){
     }
 
     return {globalCompletionToday: completionToday, newStreak: newStreak};
+}
 
 
+export const deleteTable = async (table: string) => {
+
+    const {error} = await supabase.from(table).delete().not('id', 'is', null);
+    if (error)
+        throw new Error('Internal server error');
+}
+
+export const resetUser = async () => {
+
+    const {error} = await supabase
+        .from('me')
+        .update({
+            timezone: 'Europe/Bucharest',
+            xp: 0,
+            level: 1,
+            xp_into_level: 0,
+            xp_to_next_level: 100,
+            streak: 0,
+        })
+        .not('id', 'is', null);
+    if (error)
+        throw new Error('Internal server error');
 }
