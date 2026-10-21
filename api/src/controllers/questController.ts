@@ -193,6 +193,14 @@ export const completeQuest = async(req: FastifyRequest<{Params: {id: string}}>, 
                 throw new Error('Internal server error');
             returnedCompletion = insertCompletion;
 
+            //Also update the done column in quests
+            const {error: updateQuestError} = await supabase
+                .from('quests')
+                .update({done: true})
+                .eq('id', id);
+            if(updateQuestError)
+                throw new Error('Internal server error');
+
             //Compute newXp and Level, after multiplying the addXp by the streak bonus
             const streakBonus = globalCompletionToday ? 0 : Math.min(newStreak, 7) * 2;
             const awardedXp = addXp + streakBonus;
