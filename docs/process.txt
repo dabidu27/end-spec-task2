@@ -12,6 +12,8 @@ Dupa ce am finalizat API-ul, l-am testat comparand-ul cu inregistrarile din refe
 
 Dupa API, am lucrat cu Claude Design la un UI, pe care l-am implementat apoi in cod. Dupa fiecare componenta sau parte de UI, am implementat functiile de handle necesare, care apeleaza API-ul.
 
+Am containerizat aplicatia cu Docker (un Dockerfile pentru apps/api, unul pentru apps/web si un docker-compose.yml), astfel incat proiectul porneste pe orice masina cu docker compose up, dupa ce se creeaza apps/api/.env cu valorile Supabase.
+
 Am omis tranzactionalitatea pentru a salva timp, dar este un lucru pe care l-as repara. Am observat si lipsa endpoint-urilor de edit si delete pentru quest-uri, pe care le-as adauga pentru user experience.
 
 Brief-ul nu mentiona cum ar trebui ca quest-urile recurente sa redevina "undone". Am rezolvat asta recalculand starea la fiecare GET: un quest recurent este "done" daca are o completare in ziua respectiva, iar raspunsul este trimis direct catre frontend. Baza de date ramane insa nesincronizata, deoarece nu actualizez coloana `done`, ca sa evit un write intr-un read. Problema se poate rezolva cu un cron job.
