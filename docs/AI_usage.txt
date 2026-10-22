@@ -1,0 +1,5 @@
+Am folost AI pentru a analiza mai usor inregistrarile din reference_recording, le-am separat in functie de endpoint-ul pe care il apleaza.
+Am verifica manual inregistrarile pentru a gasi regulile care nu erau prezentate in brief, dar cateva mi-au scapat mie si au fost gasite de AI.
+Test-ul care trece prin inregistrarile din reference_recording.jsonl este generat de AI si apoi verificat de mine
+L-am folosit pentru a generat bucati de cod repetitive sau pentru care stiam deja cum ar arata implementarea, pentru a salva timp.
+De asemenea, am folosit Claude Design pentru a lucra la un UI design, iar la styling-ul CSS am folosit si coding agentul, pentru a salva timp din a seta dimensiuni si culori

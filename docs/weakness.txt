@@ -1,0 +1,9 @@
+Solutia mea nu a implementat tranzactionalitate in baza de date. 
+Sunt endpoint-uri in API care fac mai multe write-uri la un request. De exemplu, DELETE /completions/:id face trei scrieri separate: sterge randul din
+"completions", seteaza "done = false" pe quest-ul asociat (daca nu mai are alte completari)
+si recalculeaza si salveaza xp, level si streak in "me".
+Fiecare scriere este un apel separat din "supabase-js", deci nu ruleaza in aceeasi tranzactie.
+Fara tranzactionalitate, daca unul dintre write-uri esueaza, alte write-uri pot ajunge inainte la baza de date si pot deveni out of sync. De exemplu, completarea unui quest poate fi stearsa, dar "done" sau xp/streak raman cele vechi,
+adica datele devin nesincronizate, iar clientul primeste 500.
+Cu tranzactionalitate, daca un write esueaza, esueaza toate, insa Suapbase nu expune tranzactii pe client. Exista un mod, mutarea fiecarei secvente de scrieri intr-o functie Postgres apelata cu "supabase.rpc()", care ruleaza atomic, adica ori reusesc toate scrierile, ori niciuna.
+Am ales sa nu o fac pentru ca ar fi consumat mai mult timp si pentru ca replay-ul inregistrarii trece fara ea, dar este primul lucru pe care l-as repara.
