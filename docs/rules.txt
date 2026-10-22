@@ -1,0 +1,10 @@
+
+1. Streak-ul numara zile calendaristice consecutive cu cel putin o completare, indiferent de quest. Mai multe completari in aceeasi zi nu il cresc din nou. (liniile 14-17, 35-36)
+2. Prima completare dupa o zi ratata porneste un streak nou de 1. Ruperea streak-ului nu sterge XP-ul castigat. (liniile 32-35, 59, 61)
+3. Bonusul zilnic este 2 * min(streak, 7). Ramane +14 dupa ziua 7, dar streak-ul continua sa creasca. (liniile 1, 9, 13-27, 30-31)
+4. Bonusul se acorda o singura data pe zi, la prima completare. Urmatoarele adauga doar base_xp, iar base_xp nu include bonusul. (liniile 9, 14-18, 24-25, 64-66)
+5. Penalizarea pentru quest-urile one-off intarziate este jumatate din base_xp, rotunjit in jos. (liniile 3, 16-17, 19, 24-25)
+6. Anularea unei completari scade doar base_xp-ul ei si pastreaza bonusul zilei daca mai ramane o completare in aceeasi zi, chiar daca cea anulata a fost prima. (liniile 35-38, 40)
+7. Anularea singurei completari dintr-o zi trecuta rupe streak-ul si recalculeaza bonusurile urmatoare (liniile 40, 42-46)
+8. Streak-ul urmeaza zile calendaristice, inclusiv la schimbarea orei, nu intervale de 24 de ore. (liniile 62-64)
+9. Nivelurile: start la nivel 1 cu 0 XP si 100 XP ramasi. Nivelul L costa 100 * L XP, iar xp_to_next_level arata XP-ul ramas. (liniile 1, 16-17, 30-31, 67)
