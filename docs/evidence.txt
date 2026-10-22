@@ -1,0 +1,18 @@
+Fisierul apps/api/test/full-recording.test.ts ruleaza reference_recording.jsonl pe API-ul pornit
+Resteaza mai intai baza de date, prin POST/test/reset, apoi trimite fiecare cere in ordine, cu x-now header - API-ul foloseste timestamp-ul din header, nu cel al sistemului
+Pentru fiecare cerere este verificat raspunsul, comparand statusul si body-ul cu cel din reference_recording.jsonl
+E aplicata si o normalizare, mapand UUID-urile returnate din baza de date la id-urile din inregistrari, iar la urmatoarele cereri sunt mapate invers, din alias-uri in UUID-urile reale din baza de date
+La orice comparatie gresita, testul se opreste cu eroare.
+
+Dupa o rulare care ajunge la capat - toate inregistrarile sunt verificate cu succes - testul returneaza:
+
+dabid@Adamitas-MacBook-Air api % npx tsx --test test/full-recording.test.ts
+✔ replays the complete reference recording (28343.648084ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28628.017167
