@@ -1,0 +1,17 @@
+Am inceput prin a analiza brief-ul pentru regulile legate de API: ce primesc request-urile, ce trebuie sa returneze si ce validari sunt necesare. Apoi, pentru a finaliza contractul, am analizat `reference_recording.jsonl` ca sa gasesc regulile nespecificate.
+
+Am creat o baza de date in Supabase cu 3 tabele: `quests` si `completions`, legate printr-un foreign key, si `me`, cu un singur user default. Am ales Supabase pentru ca sunt obisnuit cu el, iar clientul lui ofera rapiditate pentru un demo/MVP.
+
+Am trecut apoi la API, pe care l-am impartit intr-o arhitectura cu routers si controllers, pentru o structura mai buna. Am inceput cu request-urile pentru quest-uri: crearea si returnarea lor. Apoi am lucrat la logica de completare a quest-urilor, care s-a dovedit destul de complexa, pentru ca implica reguli diferite intre quest-urile recurente si cele facute o singura data, ajustari de xp, calcularea streak-ului si a nivelului. Dupa un pic de trial and error, am reusit sa potrivesc toate regulile legate de ajustarea xp-ului.
+
+Dupa aceea am facut endpoint-urile mai simple: returnarea datelor user-ului, schimbarea timezone-ului (care a trebuit validat) si returnarea completarilor pentru task-uri.
+
+Ultimul pas din API a fost endpoint-ul de stergere a unei completari, la fel de complex, pentru ca necesita recalcularea streak-ului: stergerea unei completari putea lasa un gap intre doua zile care inainte faceau parte din acelasi streak.
+
+Dupa ce am finalizat API-ul, l-am testat comparand-ul cu inregistrarile din reference_recording.jsonl, ruland testul apps/api/test/ full-recording.test.ts
+
+Dupa API, am lucrat cu Claude Design la un UI, pe care l-am implementat apoi in cod. Dupa fiecare componenta sau parte de UI, am implementat functiile de handle necesare, care apeleaza API-ul.
+
+Am omis tranzactionalitatea pentru a salva timp, dar este un lucru pe care l-as repara. Am observat si lipsa endpoint-urilor de edit si delete pentru quest-uri, pe care le-as adauga pentru user experience.
+
+Brief-ul nu mentiona cum ar trebui ca quest-urile recurente sa redevina "undone". Am rezolvat asta recalculand starea la fiecare GET: un quest recurent este "done" daca are o completare in ziua respectiva, iar raspunsul este trimis direct catre frontend. Baza de date ramane insa nesincronizata, deoarece nu actualizez coloana `done`, ca sa evit un write intr-un read. Problema se poate rezolva cu un cron job.
